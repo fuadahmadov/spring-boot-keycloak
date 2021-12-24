@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+
+  keycloak:
+     image: jboss/keycloak:15.1.0
+     restart: on-failure
+     environment:
+       - KEYCLOAK_USER=admin
+       - KEYCLOAK_PASSWORD=1234
+       - DB_VENDOR=postgres
+       - DB_USER=admin
+       - DB_PASSWORD=pass
+       - DB_ADDR=keycloak-db
+       - DB_PORT=5432
+       - DB_DATABASE=keycloakdb
+     ports:
+       - "8081:8080" # http
+       - "8444:8443" # https
+     depends_on:
+       - keycloak-db
+
+  keycloak-db:
+    image: postgres:14.1
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: keycloakdb
+    ports:
+      - "2021:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
